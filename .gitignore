@@ -33,3 +33,6 @@
 
 # visual studio
 .vs/
+
+# build stuff
+*.tlog
