@@ -1,3 +1,5 @@
-﻿  main.cpp
-LINK : warning LNK4098: defaultlib 'MSVCRT' conflicts with use of other libs; use /NODEFAULTLIB:library
+﻿  FirstApp.cpp
+  LveWindow.cpp
+  main.cpp
+  Generating Code...
   VulkanTest.vcxproj -> C:\Users\turnt\Documents\C++\Vulkan-Test\x64\Debug\VulkanTest.exe
