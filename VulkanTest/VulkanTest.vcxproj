@@ -156,12 +156,21 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="FirstApp.cpp" />
+    <ClCompile Include="LvePipeline.cpp" />
     <ClCompile Include="LveWindow.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FirstApp.hpp" />
+    <ClInclude Include="LvePipeline.hpp" />
     <ClInclude Include="LveWindow.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="compile.bat" />
+    <None Include="SimpleShader.frag" />
+    <None Include="SimpleShader.frag.spv" />
+    <None Include="SimpleShader.vert" />
+    <None Include="SimpleShader.vert.spv" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
