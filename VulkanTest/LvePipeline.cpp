@@ -5,7 +5,7 @@
 #include <cassert>
 namespace lve {
 
-	lve::LvePipeline::LvePipeline(LveDevice& device, const std::string& vertPath, const std::string& fragPath, const PipelineConfigInfo& configInfo) :lveDevice{device}
+	lve::LvePipeline::LvePipeline(LveDevice& device, const std::string& vertPath, const std::string& fragPath, PipelineConfigInfo& configInfo) :lveDevice{device}
 	{
 		createGraphicsPipeline(vertPath, fragPath, configInfo);
 
@@ -35,12 +35,6 @@ namespace lve {
 
 		configInfo.scissor.offset = { 0, 0 };
 		configInfo.scissor.extent = { width, height };
-
-		configInfo.viewportInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
-		configInfo.viewportInfo.viewportCount = 1;
-		configInfo.viewportInfo.pViewports = &configInfo.viewport;
-		configInfo.viewportInfo.scissorCount = 1;
-		configInfo.viewportInfo.pScissors = &configInfo.scissor;
 
 		configInfo.rasterizationInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
 		configInfo.rasterizationInfo.depthClampEnable = VK_FALSE;
@@ -116,7 +110,7 @@ namespace lve {
 		return buffer;
 	}
 
-	void lve::LvePipeline::createGraphicsPipeline(const std::string& vertPath, const std::string& fragPath, const PipelineConfigInfo& configInfo)
+	void lve::LvePipeline::createGraphicsPipeline(const std::string& vertPath, const std::string& fragPath, PipelineConfigInfo& configInfo)
 	{
 		assert(
 			configInfo.pipelineLayout != VK_NULL_HANDLE &&
@@ -155,15 +149,24 @@ namespace lve {
 		vertexInputInfo.pVertexAttributeDescriptions = nullptr;
 		vertexInputInfo.pVertexBindingDescriptions = nullptr;
 
+		VkPipelineViewportStateCreateInfo viewportInfo{};
+		viewportInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+		viewportInfo.viewportCount = 1;
+		viewportInfo.pViewports = &configInfo.viewport;
+		viewportInfo.scissorCount = 1;
+		viewportInfo.pScissors = &configInfo.scissor;
+
 		VkGraphicsPipelineCreateInfo pipelineInfo{};
 		pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
 		pipelineInfo.stageCount = 2;
 		pipelineInfo.pStages = shaderStages;
 		pipelineInfo.pVertexInputState = &vertexInputInfo;
 		pipelineInfo.pInputAssemblyState = &configInfo.inputAssemblyInfo;
-		pipelineInfo.pViewportState = &configInfo.viewportInfo;
+		pipelineInfo.pViewportState = &viewportInfo;
 		pipelineInfo.pRasterizationState = &configInfo.rasterizationInfo;
 		pipelineInfo.pMultisampleState = &configInfo.multisampleInfo;
+		configInfo.colorBlendInfo.pAttachments = &configInfo.colorBlendAttachment;
+
 		pipelineInfo.pColorBlendState = &configInfo.colorBlendInfo;
 		pipelineInfo.pDepthStencilState = &configInfo.depthStencilInfo;
 		pipelineInfo.pDynamicState = nullptr;
@@ -196,6 +199,10 @@ namespace lve {
 		if (vkCreateShaderModule(lveDevice.device(), &createInfo, nullptr, shaderModule) != VK_SUCCESS) {
 			throw std::runtime_error("Failed to create shader module");
 		}
+	}
+
+	void LvePipeline::bind(VkCommandBuffer commandBuffer) {
+		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
 	}
 
 }
